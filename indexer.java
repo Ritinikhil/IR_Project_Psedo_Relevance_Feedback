@@ -1,3 +1,6 @@
+/*  Read cran.all.1400 
+Splitting the text using markers: T for title, .W for text
+*/
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
