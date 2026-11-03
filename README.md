@@ -1,1 +1,1 @@
-# IR_Project_Psedo_Relevance_Feedback
+# Psedo_Relevance_Feedback
