@@ -1,5 +1,7 @@
 /*  Read cran.all.1400 
 Splitting the text using markers: T for title, .W for text
+Bascially I m cleaning the dataset here to make it structured for the lucene Engine
+Used Lucene 10.3.0
 */
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
