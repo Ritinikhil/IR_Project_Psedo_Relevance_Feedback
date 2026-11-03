@@ -1,0 +1,100 @@
+#!/bin/bash
+export MAVEN_OPTS="--enable-native-access=ALL-UNNAMED"
+cd ~/ir-ca1/search || exit
+
+# ==========================================
+# Terminal UI Color & Style Variables
+# ==========================================
+BOLD='\e[1m'
+CYAN='\e[36m'
+GREEN='\e[32m'
+YELLOW='\e[33m'
+RED='\e[31m'
+MAGENTA='\e[35m'
+RESET='\e[0m'
+
+# ==========================================
+# Function to draw the menu
+# ==========================================
+show_menu() {
+    clear
+    echo -e "${CYAN}${BOLD}======================================================${RESET}"
+    echo -e "${CYAN}${BOLD}      CRANFIELD IR SYSTEM DEMONSTRATION MENU      ${RESET}"
+    echo -e "${CYAN}${BOLD}======================================================${RESET}"
+    echo -e ""
+    echo -e "${YELLOW}  [1]${RESET} Compare Scoring Models (BM25, VSM, LMD)"
+    echo -e "${YELLOW}  [2]${RESET} Demo PRF Success Case (Query 184)"
+    echo -e "${YELLOW}  [3]${RESET} Demo PRF Failure Case (Query 18)"
+    echo -e "${YELLOW}  [4]${RESET} Evaluate Grid Search Results (eval_grid.py)"
+    echo -e "${YELLOW}  [5]${RESET} Display Final PRF & Fusion Results"
+    echo -e ""
+    echo -e "${RED}  [0]${RESET} Exit Demonstration"
+    echo -e ""
+    echo -e "${CYAN}======================================================${RESET}"
+}
+
+# ==========================================
+# Main Execution Loop
+# ==========================================
+while true; do
+    show_menu
+    read -rp $'\e[1;32mSelect an option [0-5]: \e[0m' choice
+
+    case $choice in
+        1)
+            echo -e "\n${MAGENTA}${BOLD}--- Running: Demo (heat transfer hypersonic) ---${RESET}\n"
+            mvn -q exec:java -Dexec.mainClass=ca1.Demo -Dexec.args="$HOME/ir-ca1/index-english english heat transfer hypersonic" 2>/dev/null
+            read -rp $'\n\e[1;33mPress Enter to return to the menu...\e[0m'
+            ;;
+        2)
+            echo -e "\n${GREEN}${BOLD}--- Running: DemoPRF SUCCESS (Query 184) ---${RESET}\n"
+            mvn -q exec:java -Dexec.mainClass=ca1.DemoPRF -Dexec.args="$HOME/ir-ca1/index-english english 5 20 0.8 work on small-oscillation re-entry motions" 2>/dev/null
+            read -rp $'\n\e[1;33mPress Enter to return to the menu...\e[0m'
+            ;;
+        3)
+            echo -e "\n${RED}${BOLD}--- Running: DemoPRF FAILURE (Query 18) ---${RESET}\n"
+            mvn -q exec:java -Dexec.mainClass=ca1.DemoPRF -Dexec.args="$HOME/ir-ca1/index-english english 5 20 0.8 are experimental pressure distributions on bodies of revolution at angle of attack available" 2>/dev/null
+            read -rp $'\n\e[1;33mPress Enter to return to the menu...\e[0m'
+            ;;
+        4)
+            echo -e "\n${CYAN}${BOLD}--- Running: Grid Search Evaluation ---${RESET}\n"
+            cd ~/ir-ca1
+            if [ -d "runs-grid" ] && [ "$(ls -A runs-grid 2>/dev/null)" ]; then
+                python3 eval_grid.py runs-grid grid_english.csv
+                echo -e "\n${GREEN}Top results saved to grid_english.csv. Head:${RESET}"
+                head -n 6 grid_english.csv | column -s ',' -t
+            else
+                if [ -f "grid_english.csv" ]; then
+                    echo -e "${YELLOW}Warning: 'runs-grid' missing. Displaying existing grid_english.csv:${RESET}\n"
+                    head -n 6 grid_english.csv | column -s ',' -t
+                else
+                    echo -e "${RED}Error: Neither 'runs-grid' folder nor 'grid_english.csv' found.${RESET}"
+                fi
+            fi
+            cd ~/ir-ca1/search
+            read -rp $'\n\e[1;33mPress Enter to return to the menu...\e[0m'
+            ;;
+        5)
+            echo -e "\n${CYAN}${BOLD}--- Final PRF & Rank Fusion Evaluation Results ---${RESET}\n"
+            if [ -f "$HOME/ir-ca1/prf_output.txt" ]; then
+                # Highlight table headers and important metrics using sed and grep coloring
+                cat "$HOME/ir-ca1/prf_output.txt" | \
+                sed -e "s/| System | MAP |/${BOLD}${GREEN}| System | MAP |/g" \
+                    -e "s/Cross-validation summary:/${BOLD}${CYAN}Cross-validation summary:${RESET}/g" \
+                    -e "s/Per-query examples/${BOLD}${YELLOW}Per-query examples${RESET}/g" \
+                    -e "s/Rank fusion (RRF, k=60):/${BOLD}${MAGENTA}Rank fusion (RRF, k=60):${RESET}/g"
+            else
+                echo -e "${RED}Error: $HOME/ir-ca1/prf_output.txt not found.${RESET}"
+            fi
+            read -rp $'\n\e[1;33mPress Enter to return to the menu...\e[0m'
+            ;;
+        0)
+            echo -e "\n${GREEN}Exiting demonstration. Goodbye!${RESET}\n"
+            exit 0
+            ;;
+        *)
+            echo -e "\n${RED}Invalid option. Please choose a number between 0 and 5.${RESET}"
+            sleep 1
+            ;;
+    esac
+done
