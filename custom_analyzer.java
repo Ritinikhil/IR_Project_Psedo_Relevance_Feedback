@@ -25,13 +25,3 @@ public class CustomAnalyzer extends Analyzer {
         return new TokenStreamComponents(src, ts);
     }
 }
-EOF
-python3 - << 'EOF'
-p = "src/main/java/ca1/Indexer.java"
-s = open(p).read()
-old = '            default:\n                throw new IllegalArgumentException("Unknown analyzer'
-new = '            case "custom":\n                return new CustomAnalyzer();\n' + old
-assert old in s
-open(p, "w").write(s.replace(old, new, 1))
-EOF
-grep -n '"custom"' src/main/java/ca1/Indexer.java
