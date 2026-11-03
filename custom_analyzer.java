@@ -1,6 +1,3 @@
-cd ~/ir-ca1/search
-cat > src/main/java/ca1/CustomAnalyzer.java << 'EOF'
-package ca1;
 
 import java.util.*;
 import org.apache.lucene.analysis.*;
