@@ -9,8 +9,7 @@ from org.apache.lucene.search import IndexSearcher, BooleanQuery, TermQuery, Boo
 from org.apache.lucene.store import FSDirectory
 from org.apache.lucene.analysis.tokenattributes import CharTermAttribute
 
-# IMPORTANT: You must initialize the Java Virtual Machine to use PyLucene
-lucene.initVM(vmargs=['-Djava.awt.headless=true'])
+lucene.initVM(vmargs=['-Djava.awt.headless=true']) #java VM to use PyLucene
 
 class PRFGridPython:
     def __init__(self, index_dir, analyzer, similarity):
