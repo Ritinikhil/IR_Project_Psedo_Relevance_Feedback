@@ -15,10 +15,10 @@ public class CustomAnalyzer extends Analyzer {
 
     @Override
     protected TokenStreamComponents createComponents(String field) {
-        Tokenizer src = new StandardTokenizer();
-        TokenStream ts = new LowerCaseFilter(src);
-        ts = new StopFilter(ts, STOP);
-        ts = new KStemFilter(ts);
+        Tokenizer src = new StandardTokenizer(); //split into words
+        TokenStream ts = new LowerCaseFilter(src); //converts to lowercase
+        ts = new StopFilter(ts, STOP); //remove stop words from both english+ My custom arraylist
+        ts = new KStemFilter(ts); //cuts to root but cautiosly
         return new TokenStreamComponents(src, ts);
     }
 }
