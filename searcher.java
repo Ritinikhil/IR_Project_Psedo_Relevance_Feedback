@@ -69,7 +69,7 @@ public class Searcher {
                 for (int i = 0; i < hits.length; i++) {
                     String docId = searcher.storedFields().document(hits[i].doc).get("id");
                     w.printf(Locale.ROOT, "%d Q0 %s %d %.6f %s%n",
-                            q.id, docId, i + 1, hits[i].score, runName);
+                            q.id, docId, i + 1, hits[i].score, runName); //default trec format.
                 }
             }
         }
